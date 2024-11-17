@@ -1,0 +1,6 @@
+app:
+  port: 8080
+  templates_dir: templates
+  static_dir: static
+database:
+  path: ./data/Go-SQLite-Blog.db
