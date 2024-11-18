@@ -22,18 +22,6 @@ CREATE TABLE IF NOT EXISTS templates (
     content TEXT NOT NULL
 );
 
--- users
-CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE,
-    role_id INTEGER NOT NULL DEFAULT 1,
-    FOREIGN KEY(role_id) REFERENCES roles(id),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_login TIMESTAMP
-);
-
 -- comments
 CREATE TABLE IF NOT EXISTS comments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -113,6 +101,18 @@ CREATE TABLE IF NOT EXISTS permissions (
     FOREIGN KEY(role_id) REFERENCES roles(id)
 );
 
+-- users
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    role_id INTEGER NOT NULL DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP,
+    FOREIGN KEY(role_id) REFERENCES roles(id)
+);
+
 -- article revisions
 CREATE TABLE IF NOT EXISTS article_revisions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS likes (
     FOREIGN KEY(user_id) REFERENCES users(id),
     FOREIGN KEY(article_id) REFERENCES articles(id),
     FOREIGN KEY(comment_id) REFERENCES comments(id)
-)
+);
 
 -- audit logs
 CREATE TABLE IF NOT EXISTS audit_logs (

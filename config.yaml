@@ -1,6 +1,6 @@
-app:
-  port: 8080
-  templates_dir: templates
-  static_dir: static
+log_level: DEBUG # DEBUG, INFO, WARN, ERROR
+port: 8080
+errors_in_response: false
 database:
-  path: ./data/Go-SQLite-Blog.db
+  driver: sqlite3
+  source: ./blog.db

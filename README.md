@@ -19,6 +19,7 @@ Go-SQLite-Blog is a lightweight, full-featured blogging platform written in Go (
 
 ## Features
 
+- Admin Friendly: Easy to use, manage and backup - there is just the executable and the database file
 - User Management: Support for multiple user roles (admin, editor, author)
 - Article Management: Create, edit, and delete blog posts with Markdown support
 - Comments: Enable readers to leave comments on posts (with moderation options)

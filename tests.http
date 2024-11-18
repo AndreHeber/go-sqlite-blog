@@ -1,0 +1,12 @@
+GET http://127.0.0.1:8080/register
+
+###
+
+POST http://127.0.0.1:8080/register
+application/json
+
+{
+	"username": "andre",
+	"password": "1234",
+	"email": "andre@example.com"
+}
