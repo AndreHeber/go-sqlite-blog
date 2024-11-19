@@ -37,7 +37,7 @@ Check out a live demo of Go-SQLite-Blog [here](#). - _Coming Soon_
 
 ### Prerequisites
 
-- Go 1.18 or higher
+- Go 1.22 or higher
 - Git
 
 ### Installation

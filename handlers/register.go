@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
-	"net/http"
 	"time"
 
 	"github.com/AndreHeber/go-sqlite-blog/middleware"
@@ -25,21 +24,18 @@ func ShowRegister(a *middleware.Adapter) error {
 
 // TryRegister handles the registration form submission
 func TryRegister(a *middleware.Adapter) error {
-	w := a.ResponseWriter
 	r := a.Request
-	logger := a.Logger
 
 	r.ParseForm()
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 	email := r.FormValue("email")
-	logger.Info("Trying to register", "username", username, "password", password, "email", email)
 
 	err := register(models.EnvFromAdapter(a), username, password, email)
 	if err != nil {
 		return fmt.Errorf("TryRegister: %w", err)
 	}
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+
 	return nil
 }
 

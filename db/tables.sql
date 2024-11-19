@@ -94,8 +94,8 @@ CREATE TABLE IF NOT EXISTS roles (
 );
 
 -- insert role
--- INSERT INTO roles (name) VALUES ('admin');
--- INSERT INTO roles (name) VALUES ('user');
+INSERT INTO roles (name) VALUES ('admin');
+INSERT INTO roles (name) VALUES ('user');
 
 -- permissions
 CREATE TABLE IF NOT EXISTS permissions (
