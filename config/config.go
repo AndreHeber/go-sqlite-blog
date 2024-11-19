@@ -7,19 +7,24 @@ import (
 	"os"
 	"strconv"
 
+	"golang.org/x/time/rate"
 	"gopkg.in/yaml.v3"
 )
 
 type DatabaseConfig struct {
-	Driver string `yaml:"driver"`
-	Source string `yaml:"source"`
+	Driver     string `yaml:"driver"`
+	Source     string `yaml:"source"`
+	Reset      bool   `yaml:"reset"`
+	LogQueries bool   `yaml:"log_queries"`
 }
 
 type Config struct {
-	LogLevel *slog.LevelVar `yaml:"log_level"`
-	Port     int            `yaml:"port"`
-	Database DatabaseConfig `yaml:"database"`
-	ErrorsInResponse bool    `yaml:"errors_in_response"`
+	LogLevel         *slog.LevelVar `yaml:"log_level"`
+	Port             int            `yaml:"port"`
+	Database         DatabaseConfig `yaml:"database"`
+	ErrorsInResponse bool           `yaml:"errors_in_response"`
+	IpRateLimit      rate.Limit     `yaml:"ip_rate_limit"`
+	BurstRateLimit   int            `yaml:"burst_rate_limit"`
 }
 
 // 1. Load defaults
@@ -32,11 +37,15 @@ func LoadConfig() (*Config, error) {
 	config := &Config{
 		LogLevel: &slog.LevelVar{},
 		Port:     8080,
-		Database: DatabaseConfig {
-			Driver: "sqlite",
-			Source: "./blog.db",
+		Database: DatabaseConfig{
+			Driver:     "sqlite",
+			Source:     "./blog.db",
+			Reset:      false,
+			LogQueries: false,
 		},
 		ErrorsInResponse: false,
+		IpRateLimit:      10,
+		BurstRateLimit:   20,
 	}
 
 	path := checkConfigPath("config.yaml")
@@ -131,10 +140,39 @@ func loadConfigEnv(config *Config) (*Config, error) {
 		config.Database.Source = envVal
 	}
 
+	if envVal := os.Getenv("DATABASE_RESET"); envVal != "" {
+		config.Database.Reset, err = strconv.ParseBool(envVal)
+		if err != nil {
+			return nil, fmt.Errorf("loadConfigEnv: Error parsing database reset: %w", err)
+		}
+	}
+
+	if envVal := os.Getenv("DATABASE_LOG_QUERIES"); envVal != "" {
+		config.Database.LogQueries, err = strconv.ParseBool(envVal)
+		if err != nil {
+			return nil, fmt.Errorf("loadConfigEnv: Error parsing database log queries: %w", err)
+		}
+	}
+
 	if envVal := os.Getenv("ERRORS_IN_RESPONSE"); envVal != "" {
 		config.ErrorsInResponse, err = strconv.ParseBool(envVal)
 		if err != nil {
 			return nil, fmt.Errorf("loadConfigEnv: Error parsing errors in response: %w", err)
+		}
+	}
+
+	if envVal := os.Getenv("IP_RATE_LIMIT"); envVal != "" {
+		f, err := strconv.ParseFloat(envVal, 64)
+		if err != nil {
+			return nil, fmt.Errorf("loadConfigEnv: Error parsing ip rate limit: %w", err)
+		}
+		config.IpRateLimit = rate.Limit(f)
+	}
+
+	if envVal := os.Getenv("BURST_RATE_LIMIT"); envVal != "" {
+		config.BurstRateLimit, err = strconv.Atoi(envVal)
+		if err != nil {
+			return nil, fmt.Errorf("loadConfigEnv: Error parsing burst rate limit: %w", err)
 		}
 	}
 
@@ -148,6 +186,8 @@ func loadConfigFlags(config *Config) *Config {
 	flag.IntVar(&config.Port, "port", config.Port, "Port to listen on")
 	flag.StringVar(&config.Database.Driver, "database-driver", config.Database.Driver, "Database driver")
 	flag.StringVar(&config.Database.Source, "database-source", config.Database.Source, "Database source")
+	flag.BoolVar(&config.Database.Reset, "database-reset", config.Database.Reset, "Reset database")
+	flag.BoolVar(&config.Database.LogQueries, "database-log-queries", config.Database.LogQueries, "Log database queries")
 	flag.BoolVar(&config.ErrorsInResponse, "errors-in-response", config.ErrorsInResponse, "Include errors in response")
 
 	flag.Parse()

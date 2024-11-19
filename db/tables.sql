@@ -93,6 +93,10 @@ CREATE TABLE IF NOT EXISTS roles (
     name TEXT NOT NULL UNIQUE
 );
 
+-- insert role
+-- INSERT INTO roles (name) VALUES ('admin');
+-- INSERT INTO roles (name) VALUES ('user');
+
 -- permissions
 CREATE TABLE IF NOT EXISTS permissions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -106,7 +110,9 @@ CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
+    salt TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
+    verified BOOLEAN NOT NULL DEFAULT FALSE,
     role_id INTEGER NOT NULL DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_login TIMESTAMP,

@@ -1,12 +1,37 @@
 GET http://127.0.0.1:8080/register
 
-###
+### health
+
+GET http://127.0.0.1:8080/health
+
+### time-consuming
+
+GET http://127.0.0.1:8080/time-consuming
+
+### valid register
 
 POST http://127.0.0.1:8080/register
-application/json
+Content-Type: application/x-www-form-urlencoded
 
-{
-	"username": "andre",
-	"password": "1234",
-	"email": "andre@example.com"
-}
+username=test&password=test&email=test@test.com
+
+### invalid password
+
+POST http://127.0.0.1:8080/login
+Content-Type: application/x-www-form-urlencoded
+
+username=test&password=test123
+
+### invalid username
+
+POST http://127.0.0.1:8080/login
+Content-Type: application/x-www-form-urlencoded
+
+username=test123&password=test
+
+### valid login
+
+POST http://127.0.0.1:8080/login
+Content-Type: application/x-www-form-urlencoded
+
+username=test&password=test

@@ -1,6 +1,9 @@
 log_level: DEBUG # DEBUG, INFO, WARN, ERROR
 port: 8080
-errors_in_response: false
+errors_in_response: true
 database:
   driver: sqlite3
   source: ./blog.db
+  log_queries: true
+ip_rate_limit: 10
+burst_rate_limit: 20

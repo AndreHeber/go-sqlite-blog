@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"os"
 
 	// _ "github.com/mattn/go-sqlite3"
 	_ "github.com/ncruces/go-sqlite3/driver"
@@ -16,22 +17,32 @@ func CloseDB(db *sql.DB) error {
 	return db.Close()
 }
 
-// func CreateTables(db *sql.DB) error {
-// 	// read tables.sql
-// 	content, err := os.ReadFile("./db/tables.sql")
-// 	if err != nil {
-// 		return err
-// 	}
+func CreateTables(db *sql.DB) error {
+	// read tables.sql
+	content, err := os.ReadFile("./db/tables.sql")
+	if err != nil {
+		return err
+	}
 
-// 	// execute the content
-// 	_, err = db.Exec(string(content))
-// 	if err != nil {
-// 		return err
-// 	}
+	// execute the content
+	_, err = db.Exec(string(content))
+	if err != nil {
+		return err
+	}
 
-// 	return nil
-// }
+	return nil
+}
 
 func Init(driver string, source string) (*sql.DB, error) {
-	return ConnectDB(driver, source)
+	db, err := ConnectDB(driver, source)
+	if err != nil {
+		return nil, err
+	}
+
+	err = CreateTables(db)
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
 }

@@ -3,13 +3,17 @@ package users
 import (
 	"database/sql"
 	_ "embed"
+	"fmt"
 	"time"
+
+	"github.com/AndreHeber/go-sqlite-blog/models"
 )
 
 type User struct {
 	Id             uint64
 	Username       string
 	HashedPassword string
+	Salt           string
 	Email          string
 	Verified       bool
 	RoleId         uint64
@@ -28,7 +32,36 @@ func CreateSchema(db *sql.DB) error {
 //go:embed insert.sql
 var insert string
 
-func CreateUser(db *sql.DB, user User) error {
-	_, err := db.Exec(insert, user.Username, user.HashedPassword, user.Email, user.Verified, user.RoleId, user.CreatedAt, user.LastLogin)
-	return err
+func CreateUser(env *models.Env, user User) error {
+	_, err := env.Db.ExecContext(env.Ctx, insert, user.Username, user.HashedPassword, user.Salt, user.Email, user.Verified, user.RoleId, user.CreatedAt, user.LastLogin)
+	if err != nil {
+		return fmt.Errorf("CreateUser: %w", err)
+	}
+
+	if env.LogDbQueries {
+		env.Logger.Info("models: CreateUser", "sql", insert, "user", user)
+	}
+
+	return nil
+}
+
+//go:embed select_where_username.sql
+var selectWhereUsername string
+
+func GetUserByUsername(env *models.Env, username string) (User, error) {
+	var user User
+	err := env.Db.QueryRowContext(env.Ctx, selectWhereUsername, username).Scan(&user.Id, &user.Username, &user.HashedPassword, &user.Salt, &user.Email, &user.Verified, &user.RoleId, &user.CreatedAt, &user.LastLogin)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return User{}, fmt.Errorf("GetUserByUsername: user not found")
+		}
+		env.Logger.Error("models: GetUserByUsername", "error", err, "sql", selectWhereUsername, "username", username)
+		return User{}, fmt.Errorf("GetUserByUsername: %w", err)
+	}
+
+	if env.LogDbQueries {
+		env.Logger.Info("models: GetUserByUsername", "sql", selectWhereUsername, "username", username)
+	}
+
+	return user, nil
 }

@@ -24,7 +24,11 @@ func main() {
 	}))
 	slog.SetDefault(logger)
 
-	adapter := middleware.Init(cfg.ErrorsInResponse)
+	if cfg.Database.Reset {
+		slog.Info("Resetting database")
+		// delete database file
+		os.Remove(cfg.Database.Source)
+	}
 
 	slog.Info("Initializing database", "driver", cfg.Database.Driver, "source", cfg.Database.Source)
 	db, err := dbService.Init(cfg.Database.Driver, cfg.Database.Source)
@@ -32,22 +36,21 @@ func main() {
 		slog.Error("main: Error initializing database", "error", err)
 	}
 
-	registerService, err := handlers.Init(db, logger)
-	if err != nil {
-		slog.Error("main: Error initializing register service", "error", err)
-	}
+	adapter := middleware.Init(logger, db, cfg.ErrorsInResponse, cfg.Database.LogQueries, cfg.IpRateLimit, cfg.BurstRateLimit)
 
 	mux := http.NewServeMux()
-	showRegister := adapter.HttpToContextHandler(registerService.ShowRegister)
-	mux.Handle("GET /register", middleware.LoggingMiddleware(showRegister))
 
-	tryRegister := adapter.HttpToContextHandler(registerService.TryRegister)
-	mux.Handle("POST /register", middleware.LoggingMiddleware(tryRegister))
+	mux.Handle("GET /health", adapter.HttpToContextHandler(handlers.Health))
+	mux.Handle("GET /time-consuming", adapter.HttpToContextHandler(handlers.TimeConsumingHandler))
+
+	mux.Handle("GET /register", adapter.HttpToContextHandler(handlers.ShowRegister))
+	mux.Handle("POST /register", adapter.HttpToContextHandler(handlers.TryRegister))
+
+	mux.Handle("GET /login", adapter.HttpToContextHandler(handlers.ShowLogin))
+	mux.Handle("POST /login", adapter.HttpToContextHandler(handlers.TryLogin))
 
 	// register routes
 	http.HandleFunc("/", handlers.ArticlesHandler)
-	http.HandleFunc("GET /login", handlers.ShowLogin)
-	http.HandleFunc("POST /login", handlers.TryLogin)
 
 
 	http.HandleFunc("/settings", handlers.SettingsHandler)
