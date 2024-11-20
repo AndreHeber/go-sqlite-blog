@@ -31,7 +31,7 @@ func main() {
 	}
 
 	slog.Info("Initializing database", "driver", cfg.Database.Driver, "source", cfg.Database.Source)
-	db, err := dbService.Init(cfg.Database.Driver, cfg.Database.Source, "./db/tables.sql")
+	db, err := dbService.Init(cfg.Database.Driver, cfg.Database.Source, "../../db/tables.sql")
 	if err != nil {
 		slog.Error("main: Error initializing database", "error", err)
 		os.Exit(1)

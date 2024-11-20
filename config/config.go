@@ -38,7 +38,7 @@ func LoadConfig() (*Config, error) {
 		LogLevel: &slog.LevelVar{},
 		Port:     8080,
 		Database: DatabaseConfig{
-			Driver:     "sqlite",
+			Driver:     "sqlite3",
 			Source:     "./blog.db",
 			Reset:      false,
 			LogQueries: false,
