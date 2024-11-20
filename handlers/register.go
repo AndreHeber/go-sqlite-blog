@@ -18,7 +18,10 @@ func ShowRegister(a *middleware.Adapter) error {
 	if err != nil {
 		return fmt.Errorf("ShowRegister: %w", err)
 	}
-	tmpl.Execute(w, nil)
+	err = tmpl.Execute(w, nil)
+	if err != nil {
+		return fmt.Errorf("ShowRegister: %w", err)
+	}
 	return nil
 }
 
@@ -26,12 +29,15 @@ func ShowRegister(a *middleware.Adapter) error {
 func TryRegister(a *middleware.Adapter) error {
 	r := a.Request
 
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		return fmt.Errorf("TryRegister: %w", err)
+	}
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 	email := r.FormValue("email")
 
-	err := register(models.EnvFromAdapter(a), username, password, email)
+	err = register(models.EnvFromAdapter(a), username, password, email)
 	if err != nil {
 		return fmt.Errorf("TryRegister: %w", err)
 	}
@@ -56,7 +62,7 @@ func register(env *models.Env, username, password, email string) error {
 		Salt:           encodedSalt,
 		Email:          email,
 		Verified:       false,
-		RoleId:         1,
+		RoleID:         1,
 		CreatedAt:      time.Now(),
 		LastLogin:      time.Now(),
 	}

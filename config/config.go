@@ -23,7 +23,7 @@ type Config struct {
 	Port             int            `yaml:"port"`
 	Database         DatabaseConfig `yaml:"database"`
 	ErrorsInResponse bool           `yaml:"errors_in_response"`
-	IpRateLimit      rate.Limit     `yaml:"ip_rate_limit"`
+	IPRateLimit      rate.Limit     `yaml:"ip_rate_limit"`
 	BurstRateLimit   int            `yaml:"burst_rate_limit"`
 }
 
@@ -44,7 +44,7 @@ func LoadConfig() (*Config, error) {
 			LogQueries: false,
 		},
 		ErrorsInResponse: false,
-		IpRateLimit:      10,
+		IPRateLimit:      10,
 		BurstRateLimit:   20,
 	}
 
@@ -166,7 +166,7 @@ func loadConfigEnv(config *Config) (*Config, error) {
 		if err != nil {
 			return nil, fmt.Errorf("loadConfigEnv: Error parsing ip rate limit: %w", err)
 		}
-		config.IpRateLimit = rate.Limit(f)
+		config.IPRateLimit = rate.Limit(f)
 	}
 
 	if envVal := os.Getenv("BURST_RATE_LIMIT"); envVal != "" {

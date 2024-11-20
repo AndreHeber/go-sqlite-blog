@@ -9,9 +9,9 @@ import (
 )
 
 type Env struct {
-	Db *sql.DB
-	Ctx context.Context
-	Logger *slog.Logger
+	Db           *sql.DB
+	Ctx          context.Context
+	Logger       *slog.Logger
 	LogDbQueries bool
 }
 

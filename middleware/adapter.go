@@ -14,15 +14,15 @@ import (
 )
 
 type Adapter struct {
-	Request *http.Request
-	ResponseWriter http.ResponseWriter
-	Logger *slog.Logger
-	Db *sql.DB
-	Ctx context.Context
-	Cancel context.CancelFunc
+	Request         *http.Request
+	ResponseWriter  http.ResponseWriter
+	Logger          *slog.Logger
+	Db              *sql.DB
+	Ctx             context.Context
+	Cancel          context.CancelFunc
 	ErrorInResponse bool
-	LogDbQueries bool
-	ipRateLimiter *IPRateLimiter
+	LogDbQueries    bool
+	ipRateLimiter   *IPRateLimiter
 }
 
 func Init(logger *slog.Logger, db *sql.DB, errorInResponse bool, logDbQueries bool, ipRateLimit rate.Limit, burst int) *Adapter {
@@ -31,36 +31,36 @@ func Init(logger *slog.Logger, db *sql.DB, errorInResponse bool, logDbQueries bo
 
 // 1. Simple rate limiter per IP
 type IPRateLimiter struct {
-    ips map[string]*rate.Limiter
-    mu  sync.RWMutex
-    r   rate.Limit
-    b   int
+	ips map[string]*rate.Limiter
+	mu  sync.RWMutex
+	r   rate.Limit
+	b   int
 }
 
 func (l *IPRateLimiter) getLimiter(ip string) *rate.Limiter {
-    l.mu.Lock()
-    defer l.mu.Unlock()
+	l.mu.Lock()
+	defer l.mu.Unlock()
 
-    limiter, exists := l.ips[ip]
-    if !exists {
-        limiter = rate.NewLimiter(l.r, l.b)
-        l.ips[ip] = limiter
-    }
+	limiter, exists := l.ips[ip]
+	if !exists {
+		limiter = rate.NewLimiter(l.r, l.b)
+		l.ips[ip] = limiter
+	}
 
-    return limiter
+	return limiter
 }
 
 func NewIPRateLimiter(r rate.Limit, b int) *IPRateLimiter {
-    return &IPRateLimiter{
-        ips: make(map[string]*rate.Limiter),
-        r:   r,
-        b:   b,
-    }
+	return &IPRateLimiter{
+		ips: make(map[string]*rate.Limiter),
+		r:   r,
+		b:   b,
+	}
 }
 
 // Create an adapter function
-func (a *Adapter) HttpToContextHandler(h func(*Adapter) error) http.HandlerFunc {
-    return func(w http.ResponseWriter, r *http.Request) {
+func (a *Adapter) HTTPToContextHandler(h func(*Adapter) error) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		limiter := a.ipRateLimiter.getLimiter(r.RemoteAddr)
 		if !limiter.Allow() {
 			a.Logger.Info("middleware: HttpToContextHandler", "error", "Too many requests", "ip", r.RemoteAddr)
@@ -87,17 +87,17 @@ func (a *Adapter) HttpToContextHandler(h func(*Adapter) error) http.HandlerFunc 
 		defer a.Cancel()
 
 		start := time.Now()
-        if err := h(a); err != nil {
+		if err := h(a); err != nil {
 			a.Logger.Error("middleware: HttpToContextHandler", "error", err)
 
-            // Handle error appropriately
+			// Handle error appropriately
 			if a.ErrorInResponse {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 			} else {
 				// return common error
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			}
-        }
+		}
 
 		// log response info, parameters and duration
 		var requestInfo string
@@ -108,5 +108,5 @@ func (a *Adapter) HttpToContextHandler(h func(*Adapter) error) http.HandlerFunc 
 		}
 		duration := time.Since(start)
 		a.Logger.Info(requestInfo, "duration", duration.String())
-    }
+	}
 }

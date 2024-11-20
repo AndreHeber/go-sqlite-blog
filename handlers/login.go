@@ -16,18 +16,24 @@ func ShowLogin(a *middleware.Adapter) error {
 	if err != nil {
 		return fmt.Errorf("ShowLogin: %w", err)
 	}
-	tmpl.Execute(w, nil)
+	err = tmpl.Execute(w, nil)
+	if err != nil {
+		return fmt.Errorf("ShowLogin: %w", err)
+	}
 	return nil
 }
 
 func TryLogin(a *middleware.Adapter) error {
 	r := a.Request
 
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		return fmt.Errorf("TryLogin: %w", err)
+	}
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	err := login(models.EnvFromAdapter(a), username, password)
+	err = login(models.EnvFromAdapter(a), username, password)
 	if err != nil {
 		if a.ErrorInResponse {
 			return fmt.Errorf("TryLogin: %w", err)

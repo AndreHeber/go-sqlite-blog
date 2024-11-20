@@ -10,13 +10,13 @@ import (
 )
 
 type User struct {
-	Id             uint64
+	ID             uint64
 	Username       string
 	HashedPassword string
 	Salt           string
 	Email          string
 	Verified       bool
-	RoleId         uint64
+	RoleID         uint64
 	CreatedAt      time.Time
 	LastLogin      time.Time
 }
@@ -25,7 +25,7 @@ type User struct {
 var insert string
 
 func CreateUser(env *models.Env, user User) error {
-	_, err := env.Db.ExecContext(env.Ctx, insert, user.Username, user.HashedPassword, user.Salt, user.Email, user.Verified, user.RoleId, user.CreatedAt, user.LastLogin)
+	_, err := env.Db.ExecContext(env.Ctx, insert, user.Username, user.HashedPassword, user.Salt, user.Email, user.Verified, user.RoleID, user.CreatedAt, user.LastLogin)
 	if err != nil {
 		env.Logger.Error("models: CreateUser", "error", err, "sql", insert, "user", user)
 		return fmt.Errorf("CreateUser: %w", err)
@@ -43,7 +43,7 @@ var selectWhereUsername string
 
 func GetUserByUsername(env *models.Env, username string) (User, error) {
 	var user User
-	err := env.Db.QueryRowContext(env.Ctx, selectWhereUsername, username).Scan(&user.Id, &user.Username, &user.HashedPassword, &user.Salt, &user.Email, &user.Verified, &user.RoleId, &user.CreatedAt, &user.LastLogin)
+	err := env.Db.QueryRowContext(env.Ctx, selectWhereUsername, username).Scan(&user.ID, &user.Username, &user.HashedPassword, &user.Salt, &user.Email, &user.Verified, &user.RoleID, &user.CreatedAt, &user.LastLogin)
 	if err == sql.ErrNoRows {
 		return User{}, fmt.Errorf("GetUserByUsername: user not found")
 	}

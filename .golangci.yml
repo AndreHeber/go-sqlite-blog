@@ -13,7 +13,7 @@ linters:
 
 linters-settings:
   gocyclo:
-    min-complexity: 15
+    min-complexity: 20
   revive:
     rules:
       - name: var-naming

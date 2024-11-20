@@ -37,7 +37,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	adapter := middleware.Init(logger, db, cfg.ErrorsInResponse, cfg.Database.LogQueries, cfg.IpRateLimit, cfg.BurstRateLimit)
+	adapter := middleware.Init(logger, db, cfg.ErrorsInResponse, cfg.Database.LogQueries, cfg.IPRateLimit, cfg.BurstRateLimit)
 	mux := setupRouter(adapter)
 
 	// start server
@@ -51,14 +51,14 @@ func main() {
 func setupRouter(adapter *middleware.Adapter) *http.ServeMux {
 	mux := http.NewServeMux()
 
-	mux.Handle("GET /health", adapter.HttpToContextHandler(handlers.Health))
-	mux.Handle("GET /time-consuming", adapter.HttpToContextHandler(handlers.TimeConsumingHandler))
+	mux.Handle("GET /health", adapter.HTTPToContextHandler(handlers.Health))
+	mux.Handle("GET /time-consuming", adapter.HTTPToContextHandler(handlers.TimeConsumingHandler))
 
-	mux.Handle("GET /register", adapter.HttpToContextHandler(handlers.ShowRegister))
-	mux.Handle("POST /register", adapter.HttpToContextHandler(handlers.TryRegister))
+	mux.Handle("GET /register", adapter.HTTPToContextHandler(handlers.ShowRegister))
+	mux.Handle("POST /register", adapter.HTTPToContextHandler(handlers.TryRegister))
 
-	mux.Handle("GET /login", adapter.HttpToContextHandler(handlers.ShowLogin))
-	mux.Handle("POST /login", adapter.HttpToContextHandler(handlers.TryLogin))
+	mux.Handle("GET /login", adapter.HTTPToContextHandler(handlers.ShowLogin))
+	mux.Handle("POST /login", adapter.HTTPToContextHandler(handlers.TryLogin))
 
 	return mux
 }
