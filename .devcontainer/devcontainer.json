@@ -1,0 +1,32 @@
+{
+    "name": "Go SQLite Blog Development",
+    // Use the pre-built image
+    "image": "go-sqlite-blog-dev:latest",
+    // Use the non-root user we created
+    "remoteUser": "developer",
+    // Mount your source code
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+    "workspaceFolder": "/workspace",
+    // Mount SSH keys for git operations
+    "mounts": [
+        "source=${localEnv:HOME}/.ssh,target=/home/developer/.ssh,type=bind,consistency=cached"
+    ],
+    // Ports to forward
+    "forwardPorts": [
+        8080
+    ],
+    // Environment variables
+    "remoteEnv": {
+        "GO111MODULE": "on"
+    },
+    // Commands to run after container creation
+    "postCreateCommand": "go mod download",
+    // Use zsh
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": true,
+            "configureZshAsDefaultShell": true,
+            "installOhMyZsh": true
+        }
+    }
+}

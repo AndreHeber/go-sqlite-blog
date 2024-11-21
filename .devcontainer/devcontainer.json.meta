@@ -1,0 +1,7 @@
+{
+    "$schema": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devcontainer-ref.schema.json",
+    "build": {
+        "dockerfile": "../Dockerfile.dev",
+        "context": ".."
+    }
+}
