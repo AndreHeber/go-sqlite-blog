@@ -1,4 +1,3 @@
 cmd/Go-SQLite-Blog/blog.db
 cmd/Go-SQLite-Blog/go-sqlite-blog
 tmp
-tmp/build-errors.log
