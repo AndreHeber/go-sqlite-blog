@@ -9,12 +9,12 @@ import (
 )
 
 type Env struct {
-	Db           *sql.DB
+	DB           *sql.DB
 	Ctx          context.Context
 	Logger       *slog.Logger
-	LogDbQueries bool
+	LogDBQueries bool
 }
 
 func EnvFromAdapter(adapter *middleware.Adapter) *Env {
-	return &Env{Db: adapter.Db, Ctx: adapter.Ctx, Logger: adapter.Logger, LogDbQueries: adapter.LogDbQueries}
+	return &Env{DB: adapter.DB, Ctx: adapter.Ctx, Logger: adapter.Logger, LogDBQueries: adapter.LogDBQueries}
 }

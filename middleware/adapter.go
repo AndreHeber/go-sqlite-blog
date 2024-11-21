@@ -17,16 +17,16 @@ type Adapter struct {
 	Request         *http.Request
 	ResponseWriter  http.ResponseWriter
 	Logger          *slog.Logger
-	Db              *sql.DB
+	DB              *sql.DB
 	Ctx             context.Context
 	Cancel          context.CancelFunc
 	ErrorInResponse bool
-	LogDbQueries    bool
+	LogDBQueries    bool
 	ipRateLimiter   *IPRateLimiter
 }
 
-func Init(logger *slog.Logger, db *sql.DB, errorInResponse bool, logDbQueries bool, ipRateLimit rate.Limit, burst int) *Adapter {
-	return &Adapter{Logger: logger, Db: db, ErrorInResponse: errorInResponse, LogDbQueries: logDbQueries, ipRateLimiter: NewIPRateLimiter(ipRateLimit, burst)}
+func Init(logger *slog.Logger, db *sql.DB, errorInResponse bool, logDBQueries bool, ipRateLimit rate.Limit, burst int) *Adapter {
+	return &Adapter{Logger: logger, DB: db, ErrorInResponse: errorInResponse, LogDBQueries: logDBQueries, ipRateLimiter: NewIPRateLimiter(ipRateLimit, burst)}
 }
 
 // 1. Simple rate limiter per IP

@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Update Dependencies",
+			"command": "./update_dependencies.sh",
+			"problemMatcher": []
+		},
+		{
+			"type": "shell",
+			"label": "Check Code",
+			"command": "./check_code.sh",
+			"problemMatcher": []
+		}
+	]
+}

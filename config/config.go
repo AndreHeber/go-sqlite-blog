@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 
 	"golang.org/x/time/rate"
 	"gopkg.in/yaml.v3"
@@ -87,6 +89,11 @@ func checkConfigPath(path string) string {
 }
 
 func loadConfigFile(config *Config, path string) (*Config, error) {
+	cleanPath := filepath.Clean(path)
+	if strings.Contains(cleanPath, "..") {
+		return nil, fmt.Errorf("invalid file path")
+	}
+
 	yamlFile, err := os.ReadFile(path)
 	if err != nil {
 		slog.Error("loadConfigFile: Error loading config file", "error", err)
