@@ -1,7 +1,7 @@
 {
     "name": "Go SQLite Blog Development",
     // Use the pre-built image
-    "image": "go-sqlite-blog-dev:latest",
+    "image": "andreheber/go-sqlite-blog-dev:latest",
     // Use the non-root user we created
     "remoteUser": "developer",
     // Mount your source code

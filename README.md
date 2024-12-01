@@ -35,12 +35,19 @@ Check out a live demo of Go-SQLite-Blog [here](#). - _Coming Soon_
 
 ## Getting Started
 
-### Prerequisites
+### With Docker
+
+1. Install Docker
+2. Run `docker run -it --rm -v ~/.ssh:/home/developer/.ssh -v $(pwd):/workspace -w /workspace andreheber/go-sqlite-blog-dev:latest`
+
+### On your local machine
+
+#### Prerequisites
 
 - Go 1.22 or higher
 - Git
 
-### Installation
+#### Installation
 
 1. Clone the repository:
    ```bash
